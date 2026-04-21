@@ -396,22 +396,32 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
 
     def get_ipv4_status(self) -> IPv4Status:
         ipv4_status = IPv4Status()
-        data = self.request('admin/network?form=status_ipv4&operation=read', 'operation=read')
-        ipv4_status._wan_macaddr = get_mac(data.get('wan_macaddr', '00:00:00:00:00:00'))
-        ipv4_status._wan_ipv4_ipaddr = get_ip(data.get('wan_ipv4_ipaddr', '0.0.0.0'))
-        ipv4_status._wan_ipv4_gateway = get_ip(data.get('wan_ipv4_gateway', '0.0.0.0'))
-        ipv4_status._wan_ipv4_conntype = data.get('wan_ipv4_conntype', '')
-        ipv4_status._wan_ipv4_netmask = get_ip(data.get('wan_ipv4_netmask', '0.0.0.0'))
-        ipv4_status._wan_ipv4_pridns = get_ip(data.get('wan_ipv4_pridns', '0.0.0.0'))
-        ipv4_status._wan_ipv4_snddns = get_ip(data.get('wan_ipv4_snddns', '0.0.0.0'))
-        ipv4_status._lan_macaddr = get_mac(data.get('lan_macaddr', '00:00:00:00:00:00'))
-        ipv4_status._lan_ipv4_ipaddr = get_ip(data.get('lan_ipv4_ipaddr', '0.0.0.0'))
-        ipv4_status.lan_ipv4_dhcp_enable = self._str2bool(data.get('lan_ipv4_dhcp_enable', ''))
-        ipv4_status._lan_ipv4_netmask = get_ip(data.get('lan_ipv4_netmask', '0.0.0.0'))
-        ipv4_status.remote = self._str2bool(data.get('remote', '')) if data.get('remote') else None
+        data_network = self.request('admin/network?form=status_ipv4&operation=read', 'operation=read')
 
+        ipv4_status._wan_macaddr = get_mac(data_network.get('wan_macaddr', '00:00:00:00:00:00'))
+        ipv4_status._wan_ipv4_ipaddr = get_ip(data_network.get('wan_ipv4_ipaddr', '0.0.0.0'))
+        ipv4_status._wan_ipv4_gateway = get_ip(data_network.get('wan_ipv4_gateway', '0.0.0.0'))
+        ipv4_status._wan_ipv4_conntype = data_network.get('wan_ipv4_conntype', '')
+        ipv4_status._wan_ipv4_netmask = get_ip(data_network.get('wan_ipv4_netmask', '0.0.0.0'))
+        ipv4_status._wan_ipv4_pridns = get_ip(data_network.get('wan_ipv4_pridns', '0.0.0.0'))
+        ipv4_status._wan_ipv4_snddns = get_ip(data_network.get('wan_ipv4_snddns', '0.0.0.0'))
+        ipv4_status._lan_macaddr = get_mac(data_network.get('lan_macaddr', '00:00:00:00:00:00'))
+        ipv4_status._lan_ipv4_ipaddr = get_ip(data_network.get('lan_ipv4_ipaddr', '0.0.0.0'))
+        ipv4_status.lan_ipv4_dhcp_enable = self._str2bool(data_network.get('lan_ipv4_dhcp_enable', ''))
+        ipv4_status._lan_ipv4_netmask = get_ip(data_network.get('lan_ipv4_netmask', '0.0.0.0'))
+        ipv4_status.remote = self._str2bool(data_network.get('remote', '')) if data_network.get('remote') else None
+        
+        data_dhcp = self.request('admin/dhcps?form=setting', 'operation=read')
+
+        ipv4_status._lan_ipv4_dhcp_enabled = self._str2bool(data_dhcp.get('enable', ''))
+        ipv4_status._lan_ipv4_dhcp_leasetime = 0
+        ipv4_status._lan_ipv4_dhcp_pridns = get_ip(data_dhcp.get('pri_dns', '0.0.0.0'))
+        ipv4_status._lan_ipv4_dhcp_snddns = get_ip(data_dhcp.get('snd_dns', '0.0.0.0'))
+        ipv4_status._lan_ipv4_dhcp_range_start = get_ip(data_dhcp.get('ipaddr_start', '0.0.0.0'))
+        ipv4_status._lan_ipv4_dhcp_range_end = get_ip(data_dhcp.get('ipaddr_end', '0.0.0.0'))
+        
         return ipv4_status
-
+    
     def get_ipv4_reservations(self) -> [IPv4Reservation]:
         ipv4_reservations = []
         data = self.request(self._url_ipv4_reservations, 'operation=load')

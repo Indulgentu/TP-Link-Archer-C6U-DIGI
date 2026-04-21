@@ -176,6 +176,12 @@ class IPv4Status:
     _lan_ipv4_ipaddr: IPv4Address | None = None
     lan_ipv4_dhcp_enable: bool | None = None
     _lan_ipv4_netmask: IPv4Address | None = None
+    _lan_ipv4_dhcp_enabled: bool | None = None
+    _lan_ipv4_dhcp_leasetime: int | None = None
+    _lan_ipv4_dhcp_pridns: IPv4Address | None = None
+    _lan_ipv4_dhcp_snddns: IPv4Address | None = None
+    _lan_ipv4_dhcp_range_start: IPv4Address | None = None
+    _lan_ipv4_dhcp_range_end: IPv4Address | None = None
     remote: bool | None = None
 
     @property
@@ -254,6 +260,29 @@ class IPv4Status:
     def lan_ipv4_netmask_address(self):
         return self._lan_ipv4_netmask
 
+    @property
+    def lan_ipv4_dhcp_enabled(self):
+        return self._lan_ipv4_dhcp_enabled
+    
+    @property
+    def lan_ipv4_dhcp_leasetime(self):
+        return self._lan_ipv4_dhcp_leasetime
+    
+    @property
+    def lan_ipv4_dhcp_pridns(self):
+        return self._lan_ipv4_dhcp_pridns
+    
+    @property
+    def lan_ipv4_dhcp_snddns(self):
+        return self._lan_ipv4_dhcp_snddns
+    
+    @property
+    def lan_ipv4_dhcp_range_start(self):
+        return self._lan_ipv4_dhcp_range_start
+    
+    @property
+    def lan_ipv4_dhcp_range_end(self):
+        return self._lan_ipv4_dhcp_range_end
 
 @dataclass
 class SMS:
