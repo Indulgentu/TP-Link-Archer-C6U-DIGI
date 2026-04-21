@@ -249,6 +249,7 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
         self._url_vpn_client_enable = 'admin/vpn?form=enable'
         self._url_vpn_client_server = 'admin/vpn?form=server'
         self._url_vpn_client_user_list = 'admin/vpn?form=vpn_user_list'
+        self._url_ipv4_dhcp_setting = 'admin/dhcps?form=setting'
         referer = '{}/webpages/index.html'.format(self.host)
         self._headers_request = {'Referer': referer, 'Origin': self.host}
         self._headers_login = {'Referer': referer, 'Content-Type': 'application/x-www-form-urlencoded'}
@@ -512,7 +513,15 @@ class TplinkBaseRouter(AbstractRouter, TplinkRequest):
             self._url_vpn_client_enable,
             urlencode({'operation': 'write', 'enable': 'on' if enable else 'off'}),
         )
-
+        
+    def set_ipv4_dhcp_dns(self, primary: str, secondary: str) -> None:
+        current_config = self.request(self._url_ipv4_dhcp_setting, "operation=read")
+        current_config['pri_dns'] = primary if get_ip(primary) != get_ip('0.0.0.0') else current_config['pri_dns']
+        current_config['snd_dns'] = secondary if get_ip(secondary) != get_ip('0.0.0.0') else current_config['snd_dns']
+        data = urlencode(current_config)
+        data = "operation=write&{}".format(data)
+        self.request(self._url_ipv4_dhcp_setting, data)
+    
     def set_vpn_client_server(self, server_id: str, enable: bool) -> None:
         """Toggle a VPN server on or off by ID.
 
